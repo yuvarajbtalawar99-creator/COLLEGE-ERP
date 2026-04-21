@@ -1,0 +1,228 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model branch {
+  id      Int       @id @default(autoincrement())
+  name    String
+  code    String    @unique(map: "Branch_code_key")
+  student student[]
+}
+
+model district {
+  id                                                          Int              @id @default(autoincrement())
+  name                                                        String           @unique(map: "District_name_key")
+  stateId                                                     Int
+  state                                                       state            @relation(fields: [stateId], references: [id], map: "District_stateId_fkey")
+  studentaddress_studentaddress_DistrictIdTodistrict          studentaddress[] @relation("studentaddress_DistrictIdTodistrict")
+  studentaddress_studentaddress_permanentDistrictIdTodistrict studentaddress[] @relation("studentaddress_permanentDistrictIdTodistrict")
+
+  @@index([stateId], map: "District_stateId_fkey")
+}
+
+model state {
+  id       Int        @id @default(autoincrement())
+  name     String     @unique(map: "State_name_key")
+  district district[]
+}
+
+model student {
+  id                     Int                     @id @default(autoincrement())
+  userId                 Int                     @unique(map: "Student_userId_key")
+  admissionType          student_admissionType
+  cetNumber              String?                 @unique(map: "Student_cetNumber_key")
+  dcetNumber             String?                 @unique(map: "Student_dcetNumber_key")
+  aadhaarHash            String?                 @unique(map: "Student_aadhaarHash_key")
+  branchId               Int?
+  tempCollegeId          String?                 @unique(map: "Student_tempCollegeId_key")
+  vtuUsn                 String?                 @unique(map: "Student_vtuUsn_key")
+  status                 student_status          @default(REGISTERED)
+  createdAt              DateTime                @default(now())
+
+  // Rejection
+  rejectionRemark        String?                 @db.Text
+
+  // Document verification flags
+  photoVerified          Boolean                 @default(false)
+  signatureVerified      Boolean                 @default(false)
+  marksCardVerified      Boolean                 @default(false)
+
+  // Activity timeline timestamps
+  submittedAt            DateTime?
+  resubmittedAt          DateTime?
+  reviewStartedAt        DateTime?
+  documentsVerifiedAt    DateTime?
+  approvedAt             DateTime?
+  usnAssignedAt          DateTime?
+  rejectedAt             DateTime?
+
+  branch                 branch?                 @relation(fields: [branchId], references: [id], map: "Student_branchId_fkey")
+  user                   user                    @relation(fields: [userId], references: [id], map: "Student_userId_fkey")
+  studentacademicdetails studentacademicdetails?
+  studentaddress         studentaddress?
+  studentdocuments       studentdocuments?
+  studentparentdetails   studentparentdetails?
+  studentpersonaldetails studentpersonaldetails?
+
+  @@index([branchId], map: "Student_branchId_fkey")
+}
+
+model studentacademicdetails {
+
+  id                       Int     @id @default(autoincrement())
+  studentId                Int     @unique(map: "StudentAcademicDetails_studentId_key")
+  sslcBoard                String
+  sslcYear                 Int
+  sslcRegisterNumber       String
+  sslcAttempts             Int
+  sslcMarksObtained        Float
+  sslcMaxMarks             Float
+  pucBoard                 String?
+  pucYear                  Int?
+  pucRegisterNumber        String?
+  pucAttempts              Int?
+  physicsMarks             Float?
+  mathsMarks               Float?
+  optionalSubject          String?
+  optionalMarks            Float?
+  pucPercentage            Float?
+  diplomaUniversity        String?
+  diplomaRegisterNumber    String?
+  diplomaAttempts          Int?
+  diplomaFinalYearMaxMarks Float?
+  diplomaFinalYearObtained Float?
+  diplomaPercentage        Float?
+  diplomaYear              Int?
+  pucAggregate             Float?
+  pucMaxMarks              Float?
+  sslcPercentage           Float
+  student                  student @relation(fields: [studentId], references: [id], map: "StudentAcademicDetails_studentId_fkey")
+}
+
+model studentaddress {
+  id                                                    Int      @id @default(autoincrement())
+  studentId                                             Int      @unique(map: "StudentAddress_studentId_key")
+  Address                                               String
+  City                                                  String
+  Taluk                                                 String
+  DistrictId                                            Int
+  Pincode                                               String
+  permanentAddress                                      String
+  permanentCity                                         String
+  permanentTaluk                                        String
+  permanentDistrictId                                   Int
+  permanentPincode                                      String
+  district_studentaddress_DistrictIdTodistrict          district @relation("studentaddress_DistrictIdTodistrict", fields: [DistrictId], references: [id], map: "StudentAddress_DistrictId_fkey")
+  district_studentaddress_permanentDistrictIdTodistrict district @relation("studentaddress_permanentDistrictIdTodistrict", fields: [permanentDistrictId], references: [id], map: "StudentAddress_permanentDistrictId_fkey")
+  student                                               student  @relation(fields: [studentId], references: [id], map: "StudentAddress_studentId_fkey")
+
+  @@index([DistrictId], map: "StudentAddress_DistrictId_fkey")
+  @@index([permanentDistrictId], map: "StudentAddress_permanentDistrictId_fkey")
+}
+
+model studentdocuments {
+  id                   Int     @id @default(autoincrement())
+  studentId            Int     @unique(map: "StudentDocuments_studentId_key")
+  sslcMarkscard        String?
+  pucMarkscard         String?
+  casteCertificate     String?
+  incomeCertificate    String?
+  transferCertificate  String?
+  migrationCertificate String?
+  photo                String?
+  signature            String?
+  studyCertificate     String?
+  student              student @relation(fields: [studentId], references: [id], map: "StudentDocuments_studentId_fkey")
+}
+
+model studentparentdetails {
+  id           Int     @id @default(autoincrement())
+  studentId    Int     @unique(map: "StudentParentDetails_studentId_key")
+  fatherName   String
+  motherName   String
+  parentMobile String
+  parentEmail  String?
+  occupation   String?
+  annualIncome Float?
+  student      student @relation(fields: [studentId], references: [id], map: "StudentParentDetails_studentId_fkey")
+}
+
+model studentpersonaldetails {
+  id                 Int                                @id @default(autoincrement())
+  studentId          Int                                @unique(map: "StudentPersonalDetails_studentId_key")
+  fullName           String
+  gender             studentpersonaldetails_gender
+  dateOfBirth        DateTime                           @db.DateTime(0)
+  category           String
+  religion           studentpersonaldetails_religion
+  nationality        studentpersonaldetails_nationality
+  studiedInKarnataka Boolean
+  areaType           studentpersonaldetails_areaType
+  student            student                            @relation(fields: [studentId], references: [id], map: "StudentPersonalDetails_studentId_fkey")
+}
+
+model user {
+  id        Int       @id @default(autoincrement())
+  email     String    @unique(map: "User_email_key")
+  mobile    String    @unique(map: "User_mobile_key")
+  password  String
+  role      user_role
+  createdAt DateTime  @default(now())
+  student   student?
+}
+
+enum student_admissionType {
+  KCET
+  DCET
+  MANAGEMENT
+}
+
+enum studentpersonaldetails_gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum user_role {
+  STUDENT
+  ADMISSION_OFFICER
+  SUPER_ADMIN
+}
+
+enum studentpersonaldetails_religion {
+  HINDU
+  MUSLIM
+  CHRISTIAN
+  JAIN
+  SIKH
+  BUDDHIST
+  OTHER
+}
+
+enum studentpersonaldetails_nationality {
+  INDIAN
+  NRI
+  FOREIGN
+}
+
+enum student_status {
+  REGISTERED
+  SUBMITTED
+  RESUBMITTED
+  UNDER_REVIEW
+  DOCUMENT_VERIFIED
+  CORRECTION_REQUIRED
+  REJECTED
+  ADMISSION_CONFIRMED
+  USN_ASSIGNED
+}
+
+enum studentpersonaldetails_areaType {
+  RURAL
+  URBAN
+}

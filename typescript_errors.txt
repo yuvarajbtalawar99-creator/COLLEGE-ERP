@@ -1,0 +1,12 @@
+﻿error TS6059: File 'D:/Backend-ERP/prisma.config.ts' is not under 'rootDir' 'D:/Backend-ERP/src'. 'rootDir' is expected to contain all source files.
+  The file is in the program because:
+    Matched by default include pattern '**/*'
+error TS6059: File 'D:/Backend-ERP/prisma/seed.ts' is not under 'rootDir' 'D:/Backend-ERP/src'. 'rootDir' is expected to contain all source files.
+  The file is in the program because:
+    Matched by default include pattern '**/*'
+error TS6059: File 'D:/Backend-ERP/prisma/seedAdmin.ts' is not under 'rootDir' 'D:/Backend-ERP/src'. 'rootDir' is expected to contain all source files.
+  The file is in the program because:
+    Matched by default include pattern '**/*'
+error TS6059: File 'D:/Backend-ERP/prisma/seedDistrict.ts' is not under 'rootDir' 'D:/Backend-ERP/src'. 'rootDir' is expected to contain all source files.
+  The file is in the program because:
+    Matched by default include pattern '**/*'

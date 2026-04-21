@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Student Admission Portal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1241a1",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#111621",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased">
+<div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<!-- Top Navigation Bar -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-6 lg:px-10 py-3 sticky top-0 z-50">
+<div class="flex items-center gap-4 text-primary">
+<div class="size-8 flex items-center justify-center bg-primary rounded-lg text-white">
+<span class="material-symbols-outlined">school</span>
+</div>
+<h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-tight">EduPortal ERP</h2>
+</div>
+<div class="flex flex-1 justify-end gap-4 items-center">
+<div class="hidden md:flex gap-2">
+<button class="flex items-center justify-center rounded-lg h-10 w-10 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="flex items-center justify-center rounded-lg h-10 w-10 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 transition-colors">
+<span class="material-symbols-outlined">help</span>
+</button>
+</div>
+<div class="flex items-center gap-3 pl-4 border-l border-slate-200 dark:border-slate-800">
+<div class="text-right hidden sm:block">
+<p class="text-sm font-semibold text-slate-900 dark:text-white">Alex Johnson</p>
+<p class="text-xs text-slate-500">ID: ADM-2024-001</p>
+</div>
+<div class="bg-primary/10 rounded-full p-1 border-2 border-primary">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-8" data-alt="Student profile avatar portrait" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAuhmVsNTYQQ9rmG4oWpEEIyqNAqrBVZr1EJbfTOzKIwj8GMTM9f6j84c6fSnjjfZFb2Q_xlXK4Xzs2QPg90nxhKtOkbDHQZMElU2E4OY6bCq8ZZMfhd20ZXimrgkJyr5vf7HPnZyOoqd0jDLiW2GEtlaD6ibK0vZijPWr4Zaaa6jIZ9ClKt9WNdLx4sV1NOwhGNXfMxIQUemH9njZK4xCKy-Lp0n9lUJiCkiroAa5tRTJvKYTOGs5Vc0oGTzebRs0zr-XhMVVj7vw");'></div>
+</div>
+</div>
+</div>
+</header>
+<main class="flex-1 max-w-7xl mx-auto w-full p-4 lg:p-10">
+<!-- Welcome Section -->
+<div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<h1 class="text-3xl font-bold text-slate-900 dark:text-white mb-2">Admission Application</h1>
+<p class="text-slate-600 dark:text-slate-400">Complete the following steps to submit your application for the 2024 Academic Year.</p>
+</div>
+<div class="bg-white dark:bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 flex items-center gap-4 min-w-[240px]">
+<div class="flex-1">
+<div class="flex justify-between mb-1">
+<span class="text-xs font-bold text-primary uppercase">Overall Progress</span>
+<span class="text-xs font-bold text-slate-900 dark:text-white">28%</span>
+</div>
+<div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2">
+<div class="bg-primary h-2 rounded-full" style="width: 28%"></div>
+</div>
+</div>
+<div class="size-10 flex items-center justify-center bg-primary/10 text-primary rounded-full">
+<span class="material-symbols-outlined">analytics</span>
+</div>
+</div>
+</div>
+<!-- Application Steps Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+<!-- Step 1: Personal Details (Completed) -->
+<div class="group relative flex flex-col bg-white dark:bg-slate-900 rounded-xl border-2 border-green-500 shadow-lg shadow-green-500/5 p-6 transition-all hover:translate-y-[-4px]">
+<div class="flex justify-between items-start mb-4">
+<div class="size-12 rounded-lg bg-green-100 dark:bg-green-900/30 text-green-600 flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl">person</span>
+</div>
+<div class="bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">check_circle</span> Completed
+                            </div>
+</div>
+<h3 class="text-lg font-bold text-slate-900 dark:text-white mb-1">1. Personal Details</h3>
+<p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Contact info, address, and guardian details.</p>
+<button class="mt-auto flex items-center justify-center gap-2 py-2 px-4 rounded-lg bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 font-semibold text-sm hover:bg-green-100 transition-colors">
+                            View Submission <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+<!-- Step 2: Academic Details (Active) -->
+<div class="group relative flex flex-col bg-white dark:bg-slate-900 rounded-xl border-2 border-primary shadow-lg shadow-primary/10 p-6 transition-all hover:translate-y-[-4px]">
+<div class="absolute -top-3 left-6 bg-primary text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">Active Step</div>
+<div class="flex justify-between items-start mb-4">
+<div class="size-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl">history_edu</span>
+</div>
+<div class="bg-primary/10 text-primary text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">pending</span> In Progress
+                            </div>
+</div>
+<h3 class="text-lg font-bold text-slate-900 dark:text-white mb-1">2. Academic Details</h3>
+<p class="text-sm text-slate-500 dark:text-slate-400 mb-6">High school records and standardized test scores.</p>
+<button class="mt-auto flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-primary text-white font-semibold text-sm hover:bg-primary/90 transition-colors shadow-md shadow-primary/20">
+                            Continue Application <span class="material-symbols-outlined text-sm">play_arrow</span>
+</button>
+</div>
+<!-- Step 3: Entrance Exam (Locked) -->
+<div class="group relative flex flex-col bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700 p-6 opacity-80">
+<div class="flex justify-between items-start mb-4">
+<div class="size-12 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-400 flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl">quiz</span>
+</div>
+<div class="bg-slate-200 dark:bg-slate-700 text-slate-500 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">lock</span> Locked
+                            </div>
+</div>
+<h3 class="text-lg font-bold text-slate-400 dark:text-slate-500 mb-1">3. Entrance Exam</h3>
+<p class="text-sm text-slate-400 dark:text-slate-600 mb-6">Slot booking and exam guidelines.</p>
+<div class="mt-auto text-center py-2 text-xs font-medium text-slate-400 italic">
+                            Unlocks after step 2
+                        </div>
+</div>
+<!-- Step 4: Parent Details (Locked) -->
+<div class="group relative flex flex-col bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700 p-6 opacity-80">
+<div class="flex justify-between items-start mb-4">
+<div class="size-12 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-400 flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl">family_restroom</span>
+</div>
+<div class="bg-slate-200 dark:bg-slate-700 text-slate-500 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">lock</span> Locked
+                            </div>
+</div>
+<h3 class="text-lg font-bold text-slate-400 dark:text-slate-500 mb-1">4. Parent Details</h3>
+<p class="text-sm text-slate-400 dark:text-slate-600 mb-6">Parent/Guardian identification and contact details.</p>
+<div class="mt-auto text-center py-2 text-xs font-medium text-slate-400 italic">
+                            Unlocks after step 3
+                        </div>
+</div>
+<!-- Step 5: Document Upload (Locked) -->
+<div class="group relative flex flex-col bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700 p-6 opacity-80">
+<div class="flex justify-between items-start mb-4">
+<div class="size-12 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-400 flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl">upload_file</span>
+</div>
+<div class="bg-slate-200 dark:bg-slate-700 text-slate-500 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">lock</span> Locked
+                            </div>
+</div>
+<h3 class="text-lg font-bold text-slate-400 dark:text-slate-500 mb-1">5. Document Upload</h3>
+<p class="text-sm text-slate-400 dark:text-slate-600 mb-6">Digital copies of certificates and ID proof.</p>
+<div class="mt-auto text-center py-2 text-xs font-medium text-slate-400 italic">
+                            Unlocks after step 4
+                        </div>
+</div>
+<!-- Step 6: Application Review (Locked) -->
+<div class="group relative flex flex-col bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700 p-6 opacity-80">
+<div class="flex justify-between items-start mb-4">
+<div class="size-12 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-400 flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl">rate_review</span>
+</div>
+<div class="bg-slate-200 dark:bg-slate-700 text-slate-500 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">lock</span> Locked
+                            </div>
+</div>
+<h3 class="text-lg font-bold text-slate-400 dark:text-slate-500 mb-1">6. Application Review</h3>
+<p class="text-sm text-slate-400 dark:text-slate-600 mb-6">Verify all information before final submission.</p>
+<div class="mt-auto text-center py-2 text-xs font-medium text-slate-400 italic">Unlocks after step 5</div>
+</div>
+<!-- Step 7: Final Submission (Locked) -->
+<div class="group relative flex flex-col bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700 p-6 opacity-80">
+<div class="flex justify-between items-start mb-4">
+<div class="size-12 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-400 flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl">send</span>
+</div>
+<div class="bg-slate-200 dark:bg-slate-700 text-slate-500 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">lock</span> Locked
+                            </div>
+</div>
+<h3 class="text-lg font-bold text-slate-400 dark:text-slate-500 mb-1">7. Final Submission</h3>
+<p class="text-sm text-slate-400 dark:text-slate-600 mb-6">Submit application and pay processing fee.</p>
+<div class="mt-auto text-center py-2 text-xs font-medium text-slate-400 italic">
+                            Unlocks after review
+                        </div>
+</div>
+<!-- Help Card -->
+<div class="group relative flex flex-col bg-primary/5 dark:bg-primary/10 rounded-xl border border-primary/20 p-6">
+<div class="size-12 rounded-lg bg-primary text-white flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-3xl">support_agent</span>
+</div>
+<h3 class="text-lg font-bold text-slate-900 dark:text-white mb-1">Need Help?</h3>
+<p class="text-sm text-slate-600 dark:text-slate-400 mb-6">Our admission officers are here to assist you with the process.</p>
+<button class="mt-auto py-2 px-4 rounded-lg border border-primary text-primary font-semibold text-sm hover:bg-primary hover:text-white transition-all">
+                            Contact Support
+                        </button>
+</div>
+</div>
+<!-- Footer Summary Info -->
+<div class="mt-12 p-6 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 flex flex-col md:flex-row items-center justify-between gap-6">
+<div class="flex items-center gap-4">
+<div class="bg-amber-100 dark:bg-amber-900/30 p-3 rounded-full text-amber-600">
+<span class="material-symbols-outlined">event</span>
+</div>
+<div>
+<p class="text-xs font-bold text-slate-500 uppercase tracking-wide">Application Deadline</p>
+<p class="text-base font-bold text-slate-900 dark:text-white">August 15, 2024 (11:59 PM)</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="bg-blue-100 dark:bg-blue-900/30 p-3 rounded-full text-blue-600">
+<span class="material-symbols-outlined">description</span>
+</div>
+<div>
+<p class="text-xs font-bold text-slate-500 uppercase tracking-wide">Admission Handbook</p>
+<a class="text-base font-bold text-primary hover:underline flex items-center gap-1" href="#">
+                                Download Guide <span class="material-symbols-outlined text-sm">download</span>
+</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="bg-purple-100 dark:bg-purple-900/30 p-3 rounded-full text-purple-600">
+<span class="material-symbols-outlined">payments</span>
+</div>
+<div>
+<p class="text-xs font-bold text-slate-500 uppercase tracking-wide">Application Fee Status</p>
+<p class="text-base font-bold text-slate-900 dark:text-white">Pending Submission</p>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Copyright/Info -->
+<footer class="mt-auto border-t border-slate-200 dark:border-slate-800 py-6 px-10 bg-white dark:bg-slate-950">
+<div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-500">
+<p>© 2024 University Admission ERP System. All rights reserved.</p>
+<div class="flex gap-6">
+<a class="hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="hover:text-primary transition-colors" href="#">System Status</a>
+</div>
+</div>
+</footer>
+</div>
+</div>
+</body></html>

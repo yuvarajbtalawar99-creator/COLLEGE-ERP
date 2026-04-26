@@ -1,9 +1,65 @@
 import { Request, Response, NextFunction } from "express";
-import jwt from "jsonwebtoken";
+import { createRemoteJWKSet, jwtVerify, JWTPayload } from "jose";
+import prisma from "../config/prisma";
+import { Prisma } from "@prisma/client";
+
+export interface AuthUser {
+  userId: number;
+  role: string;
+  supabaseUserId: string;
+  email?: string;
+}
+
+declare global {
+  namespace Express {
+    interface Request {
+      user: AuthUser;
+    }
+  }
+}
 
 export interface AuthRequest extends Request {
-  user?: any;
+  user: AuthUser;
 }
+
+type SupabaseJwtPayload = JWTPayload & {
+  email?: string;
+  phone?: string;
+  app_metadata?: {
+    role?: string;
+  };
+};
+
+type CachedUser = {
+  id: number;
+  role: string;
+  email: string;
+  mobile: string | null;
+  expiresAt: number;
+};
+
+const normalizeRole = (role?: string): "STUDENT" | "ADMISSION_OFFICER" | "SUPER_ADMIN" => {
+  if (role === "ADMISSION_OFFICER" || role === "SUPER_ADMIN") {
+    return role;
+  }
+  return "STUDENT";
+};
+
+const normalizePhone = (phone?: string | null) => {
+  if (!phone) return null;
+  const trimmed = String(phone).trim();
+  return trimmed.length > 0 ? trimmed : null;
+};
+
+const supabaseUrl = process.env.SUPABASE_URL;
+if (!supabaseUrl) {
+  throw new Error("SUPABASE_URL is not configured");
+}
+const jwks = createRemoteJWKSet(
+  new URL(`${supabaseUrl}/auth/v1/.well-known/jwks.json`)
+);
+const userCache = new Map<string, CachedUser>();
+const USER_CACHE_TTL_MS = 60 * 1000;
 
 export const verifyToken = (
   req: AuthRequest,
@@ -18,15 +74,125 @@ export const verifyToken = (
 
   const token = authHeader.split(" ")[1];
 
-  try {
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_SECRET as string
-    );
+  (async () => {
+    try {
+      const { payload } = await jwtVerify(token, jwks, {
+        issuer: `${process.env.SUPABASE_URL}/auth/v1`
+      });
+      const claims = payload as SupabaseJwtPayload;
+      const supabaseUserId = claims.sub;
 
-    req.user = decoded;
-    next();
-  } catch (error) {
-    return res.status(401).json({ message: "Invalid token" });
-  }
+      if (!supabaseUserId) {
+        return res.status(401).json({ message: "Invalid token subject" });
+      }
+
+      const role = normalizeRole(claims.app_metadata?.role);
+      const cacheHit = userCache.get(supabaseUserId);
+      const now = Date.now();
+      const nextEmail = claims.email ?? `${supabaseUserId}@supabase.local`;
+      const nextMobile = normalizePhone(claims.phone);
+      const claimsChanged = !cacheHit ||
+        cacheHit.email !== nextEmail ||
+        cacheHit.mobile !== nextMobile ||
+        cacheHit.role !== role;
+
+      let user = cacheHit && cacheHit.expiresAt > now && !claimsChanged
+        ? {
+            id: cacheHit.id,
+            role: cacheHit.role as any,
+            email: cacheHit.email,
+            mobile: cacheHit.mobile
+          }
+        : null;
+
+      if (!user) {
+        const existingUser = await prisma.user.findUnique({
+          where: { supabaseUserId } as any
+        });
+
+        user = existingUser;
+        if (!existingUser) {
+          try {
+            user = await prisma.user.create({
+              data: {
+                supabaseUserId,
+                email: nextEmail,
+                mobile: nextMobile as any,
+                role
+              }
+            });
+          } catch (createError: any) {
+            // If phone value is already used by another account, don't block authentication.
+            if (
+              createError instanceof Prisma.PrismaClientKnownRequestError &&
+              createError.code === "P2002"
+            ) {
+              user = await prisma.user.create({
+                data: {
+                  supabaseUserId,
+                  email: nextEmail,
+                  mobile: null as any,
+                  role
+                }
+              });
+            } else {
+              throw createError;
+            }
+          }
+        } else if (
+          existingUser.email !== nextEmail ||
+          existingUser.mobile !== nextMobile ||
+          existingUser.role !== role
+        ) {
+          try {
+            user = await prisma.user.update({
+              where: { id: existingUser.id },
+              data: {
+                email: nextEmail,
+                mobile: nextMobile as any,
+                role
+              }
+            });
+          } catch (updateError: any) {
+            // If phone conflict happens, keep role/email update and clear mobile only for this user.
+            if (
+              updateError instanceof Prisma.PrismaClientKnownRequestError &&
+              updateError.code === "P2002"
+            ) {
+              user = await prisma.user.update({
+                where: { id: existingUser.id },
+                data: {
+                  email: nextEmail,
+                  mobile: null as any,
+                  role
+                }
+              });
+            } else {
+              throw updateError;
+            }
+          }
+        }
+
+        userCache.set(supabaseUserId, {
+          id: user!.id,
+          role: user!.role,
+          email: user!.email,
+          mobile: user!.mobile ?? null,
+          expiresAt: now + USER_CACHE_TTL_MS
+        });
+      }
+
+      req.user = {
+        userId: user!.id,
+        role: user!.role,
+        supabaseUserId,
+        email: user!.email
+      };
+      next();
+    } catch (error) {
+      return res.status(401).json({ message: "Invalid token" });
+    }
+  })().catch(() => {
+    return res.status(500).json({ message: "Authentication failed" });
+  });
 };

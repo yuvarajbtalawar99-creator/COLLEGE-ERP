@@ -1,15 +1,17 @@
-import bcrypt from "bcryptjs";
 import prisma from "../src/config/prisma";
 
 async function main() {
-
-  const hashedPassword = await bcrypt.hash("admin123", 10);
-
-  await prisma.user.create({
-    data: {
+  await prisma.user.upsert({
+    where: { supabaseUserId: "seeded-admission-officer" },
+    update: {
       email: "officer@gmail.com",
-      mobile: "9876543210", // must be unique
-      password: hashedPassword,
+      mobile: "9876543210",
+      role: "ADMISSION_OFFICER"
+    },
+    create: {
+      supabaseUserId: "seeded-admission-officer",
+      email: "officer@gmail.com",
+      mobile: "9876543210",
       role: "ADMISSION_OFFICER"
     }
   });

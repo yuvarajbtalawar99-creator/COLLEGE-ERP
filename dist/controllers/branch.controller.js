@@ -10,7 +10,8 @@ const getBranches = async (req, res) => {
         const branches = await prisma_1.default.branch.findMany({
             select: {
                 id: true,
-                name: true
+                name: true,
+                code: true
             }
         });
         return res.status(200).json({

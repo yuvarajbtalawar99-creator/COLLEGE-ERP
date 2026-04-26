@@ -17,8 +17,12 @@ import applicationRoutes from "./routes/application.routes";
 dotenv.config();
 
 const app = express();
+const allowedOrigin = process.env.CORS_ORIGIN || "http://localhost:5173";
 
-app.use(cors());
+app.use(cors({
+  origin: allowedOrigin,
+  credentials: true
+}));
 app.use(express.json());
 app.use("/uploads", express.static(path.join(__dirname, "..", "uploads")));
 app.use("/api/auth", authRoutes);

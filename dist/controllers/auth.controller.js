@@ -1,14 +1,20 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.login = exports.register = void 0;
+exports.me = exports.syncUser = void 0;
 const auth_service_1 = require("../services/auth.service");
-const register = async (req, res) => {
+const syncUser = async (req, res) => {
     try {
-        const { email, mobile, password, role } = req.body;
-        const user = await (0, auth_service_1.registerUser)(email, mobile, password, role);
+        const { supabaseUserId, email, mobile, role } = req.body;
+        if (!supabaseUserId || !email) {
+            return res.status(400).json({
+                success: false,
+                message: "supabaseUserId and email are required"
+            });
+        }
+        const user = await (0, auth_service_1.syncSupabaseUser)(supabaseUserId, email, mobile, role);
         res.status(201).json({
             success: true,
-            message: "User registered successfully",
+            message: "User synced successfully",
             data: user
         });
     }
@@ -19,14 +25,19 @@ const register = async (req, res) => {
         });
     }
 };
-exports.register = register;
-const login = async (req, res) => {
+exports.syncUser = syncUser;
+const me = async (req, res) => {
     try {
-        const { email, password } = req.body;
-        const result = await (0, auth_service_1.loginUser)(email, password);
+        if (!req.user?.userId) {
+            return res.status(401).json({
+                success: false,
+                message: "Unauthorized"
+            });
+        }
+        const profile = await (0, auth_service_1.getCurrentUserProfile)(req.user.userId);
         res.status(200).json({
             success: true,
-            token: result.token
+            data: profile
         });
     }
     catch (error) {
@@ -36,4 +47,4 @@ const login = async (req, res) => {
         });
     }
 };
-exports.login = login;
+exports.me = me;

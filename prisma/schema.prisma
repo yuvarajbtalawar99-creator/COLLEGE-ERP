@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -18,7 +18,7 @@ model district {
   id                                                          Int              @id @default(autoincrement())
   name                                                        String           @unique(map: "District_name_key")
   stateId                                                     Int
-  state                                                       state            @relation(fields: [stateId], references: [id], map: "District_stateId_fkey")
+  state                                                       state            @relation(fields: [stateId], references: [id], map: "District_stateId_fkey_rel")
   studentaddress_studentaddress_DistrictIdTodistrict          studentaddress[] @relation("studentaddress_DistrictIdTodistrict")
   studentaddress_studentaddress_permanentDistrictIdTodistrict studentaddress[] @relation("studentaddress_permanentDistrictIdTodistrict")
 
@@ -61,7 +61,7 @@ model student {
   usnAssignedAt          DateTime?
   rejectedAt             DateTime?
 
-  branch                 branch?                 @relation(fields: [branchId], references: [id], map: "Student_branchId_fkey")
+  branch                 branch?                 @relation(fields: [branchId], references: [id], map: "Student_branchId_fkey_rel")
   user                   user                    @relation(fields: [userId], references: [id], map: "Student_userId_fkey")
   studentacademicdetails studentacademicdetails?
   studentaddress         studentaddress?
@@ -117,8 +117,8 @@ model studentaddress {
   permanentTaluk                                        String
   permanentDistrictId                                   Int
   permanentPincode                                      String
-  district_studentaddress_DistrictIdTodistrict          district @relation("studentaddress_DistrictIdTodistrict", fields: [DistrictId], references: [id], map: "StudentAddress_DistrictId_fkey")
-  district_studentaddress_permanentDistrictIdTodistrict district @relation("studentaddress_permanentDistrictIdTodistrict", fields: [permanentDistrictId], references: [id], map: "StudentAddress_permanentDistrictId_fkey")
+  district_studentaddress_DistrictIdTodistrict          district @relation("studentaddress_DistrictIdTodistrict", fields: [DistrictId], references: [id], map: "StudentAddress_DistrictId_fkey_rel")
+  district_studentaddress_permanentDistrictIdTodistrict district @relation("studentaddress_permanentDistrictIdTodistrict", fields: [permanentDistrictId], references: [id], map: "StudentAddress_permanentDistrictId_fkey_rel")
   student                                               student  @relation(fields: [studentId], references: [id], map: "StudentAddress_studentId_fkey")
 
   @@index([DistrictId], map: "StudentAddress_DistrictId_fkey")
@@ -157,7 +157,7 @@ model studentpersonaldetails {
   studentId          Int                                @unique(map: "StudentPersonalDetails_studentId_key")
   fullName           String
   gender             studentpersonaldetails_gender
-  dateOfBirth        DateTime                           @db.DateTime(0)
+  dateOfBirth        DateTime
   category           String
   religion           studentpersonaldetails_religion
   nationality        studentpersonaldetails_nationality
@@ -168,9 +168,10 @@ model studentpersonaldetails {
 
 model user {
   id        Int       @id @default(autoincrement())
+  supabaseUserId String @unique
   email     String    @unique(map: "User_email_key")
-  mobile    String    @unique(map: "User_mobile_key")
-  password  String
+  mobile    String?   @unique(map: "User_mobile_key")
+  password  String?
   role      user_role
   createdAt DateTime  @default(now())
   student   student?

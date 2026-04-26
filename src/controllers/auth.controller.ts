@@ -1,15 +1,22 @@
 import { Request, Response } from "express";
-import { registerUser, loginUser } from "../services/auth.service";
+import { getCurrentUserProfile, syncSupabaseUser } from "../services/auth.service";
+import { AuthRequest } from "../middlewares/auth.middleware";
 
-export const register = async (req: Request, res: Response) => {
+export const syncUser = async (req: Request, res: Response) => {
   try {
-    const { email, mobile, password, role } = req.body;
+    const { supabaseUserId, email, mobile, role } = req.body;
+    if (!supabaseUserId || !email) {
+      return res.status(400).json({
+        success: false,
+        message: "supabaseUserId and email are required"
+      });
+    }
 
-    const user = await registerUser(email, mobile, password, role);
+    const user = await syncSupabaseUser(supabaseUserId, email, mobile, role);
 
     res.status(201).json({
       success: true,
-      message: "User registered successfully",
+      message: "User synced successfully",
       data: user
     });
 
@@ -21,15 +28,19 @@ export const register = async (req: Request, res: Response) => {
   }
 };
 
-export const login = async (req: Request, res: Response) => {
+export const me = async (req: AuthRequest, res: Response) => {
   try {
-    const { email, password } = req.body;
-
-    const result = await loginUser(email, password);
+    if (!req.user?.userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized"
+      });
+    }
+    const profile = await getCurrentUserProfile(req.user.userId);
 
     res.status(200).json({
       success: true,
-      token: result.token
+      data: profile
     });
 
   } catch (error: any) {

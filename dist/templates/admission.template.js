@@ -1,9 +1,11 @@
+"use strict";
 /**
  * Professional University Admission Acknowledgment Template
  * Uses a 2-column grid layout with boxed sections and high-quality branding.
  */
-
-export const getAdmissionTemplate = (student: any) => {
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getAdmissionTemplate = void 0;
+const getAdmissionTemplate = (student) => {
     const photo = student.studentdocuments?.photo
         ? `http://localhost:5000/uploads/${student.studentdocuments.photo}`
         : 'https://via.placeholder.com/150?text=No+Photo';
@@ -12,15 +14,12 @@ export const getAdmissionTemplate = (student: any) => {
         month: 'long',
         year: 'numeric'
     });
-
     const personal = student.studentpersonaldetails || {};
     const parent = student.studentparentdetails || {};
     const address = student.studentaddress || {};
     const academic = student.studentacademicdetails || {};
     const docs = student.studentdocuments || {};
-
     const academicYear = "2024 - 2025";
-
     return `
 <!DOCTYPE html>
 <html lang="en">
@@ -367,3 +366,4 @@ export const getAdmissionTemplate = (student: any) => {
 </html>
     `;
 };
+exports.getAdmissionTemplate = getAdmissionTemplate;

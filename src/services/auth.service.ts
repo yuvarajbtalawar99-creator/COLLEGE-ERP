@@ -1,57 +1,47 @@
 import prisma from "../config/prisma";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+import { user_role } from "@prisma/client";
 
-export const registerUser = async (
+const normalizeRole = (role?: string): user_role => {
+  if (role === "ADMISSION_OFFICER") return "ADMISSION_OFFICER";
+  if (role === "SUPER_ADMIN") return "SUPER_ADMIN";
+  return "STUDENT";
+};
+
+export const syncSupabaseUser = async (
+  supabaseUserId: string,
   email: string,
-  mobile: string,
-  password: string,
-  role: "STUDENT" | "ADMISSION_OFFICER" | "SUPER_ADMIN"
+  mobile?: string | null,
+  role?: string
 ) => {
-
-  const existingUser = await prisma.user.findFirst({
-    where: {
-      OR: [{ email }, { mobile }]
-    }
-  });
-
-  if (existingUser) {
-    throw new Error("User already exists");
-  }
-
-  const hashedPassword = await bcrypt.hash(password, 10);
-
-  const user = await prisma.user.create({
-    data: {
+  const normalizedRole = normalizeRole(role);
+  const user = await prisma.user.upsert({
+    where: { supabaseUserId } as any,
+    update: {
       email,
-      mobile,
-      password: hashedPassword,
-      role
+      mobile: (mobile || null) as any,
+      role: normalizedRole
+    },
+    create: {
+      supabaseUserId,
+      email,
+      mobile: (mobile || null) as any,
+      role: normalizedRole
     }
   });
-
   return user;
 };
 
-export const loginUser = async (
-  email: string,
-  password: string
-) => {
-
+export const getCurrentUserProfile = async (userId: number) => {
   const user = await prisma.user.findUnique({
-    where: { email }
+    where: { id: userId },
+    select: {
+      id: true,
+      email: true,
+      mobile: true,
+      role: true,
+      supabaseUserId: true as any
+    }
   });
-
-  if (!user) throw new Error("Invalid credentials");
-
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) throw new Error("Invalid credentials");
-
-  const token = jwt.sign(
-    { userId: user.id, role: user.role },
-    process.env.JWT_SECRET as string,
-    { expiresIn: "7d" }
-  );
-
-  return { token };
+  if (!user) throw new Error("User not found");
+  return user;
 };

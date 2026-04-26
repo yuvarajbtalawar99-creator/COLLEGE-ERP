@@ -191,7 +191,8 @@ export const downloadPDF = async (
     const page = await browser.newPage();
     const htmlContent = getAdmissionTemplate(student);
 
-    await page.setContent(htmlContent, { waitUntil: "networkidle0" });
+    await page.setDefaultNavigationTimeout(60000);
+    await page.setContent(htmlContent, { waitUntil: "domcontentloaded" });
 
     const pdfBuffer = await page.pdf({
       format: "A4",

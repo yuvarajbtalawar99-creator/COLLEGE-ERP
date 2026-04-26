@@ -8,6 +8,9 @@ export const getBranches = async (req: Request, res: Response) => {
         id: true,
         name: true,
         code: true
+      },
+      orderBy: {
+        name: "asc"
       }
     });
 

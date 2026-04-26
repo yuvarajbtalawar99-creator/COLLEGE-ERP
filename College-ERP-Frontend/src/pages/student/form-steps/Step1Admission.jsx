@@ -5,6 +5,8 @@ import toast from 'react-hot-toast';
 
 const Step1Admission = ({ onNext, data, updateData }) => {
     const [branches, setBranches] = useState([]);
+    const [branchesLoading, setBranchesLoading] = useState(true);
+    const [branchesError, setBranchesError] = useState('');
     const [loading, setLoading] = useState(false);
     
     // Validation states
@@ -13,17 +15,27 @@ const Step1Admission = ({ onNext, data, updateData }) => {
     const [isCheckingCet, setIsCheckingCet] = useState(false);
     const [cetError, setCetError] = useState('');
 
-    useEffect(() => {
-        const fetchBranches = async () => {
-            try {
-                const res = await api.get('/branches');
-                if (res.data.success) setBranches(res.data.data);
-            } catch (err) {
-                toast.error('Failed to load branches');
+    const fetchBranches = useCallback(async () => {
+        setBranchesLoading(true);
+        setBranchesError('');
+        try {
+            // Hosted backends can cold-start; give this endpoint a longer timeout.
+            const res = await api.get('/branches', { timeout: 25000 });
+            if (res.data.success) {
+                setBranches(Array.isArray(res.data.data) ? res.data.data : []);
+            } else {
+                setBranchesError('Failed to load branch list.');
             }
-        };
-        fetchBranches();
+        } catch (err) {
+            setBranchesError('Failed to load branch list. Please retry.');
+        } finally {
+            setBranchesLoading(false);
+        }
     }, []);
+
+    useEffect(() => {
+        fetchBranches();
+    }, [fetchBranches]);
 
     // ── Aadhaar Debounced Check ────────────────────────────
     useEffect(() => {
@@ -163,12 +175,27 @@ const Step1Admission = ({ onNext, data, updateData }) => {
                         className="input-premium h-11"
                         value={data.branchId || ''}
                         onChange={(e) => updateData({ branchId: e.target.value })}
+                        disabled={branchesLoading || branches.length === 0}
                     >
-                        <option value="" disabled>Select preferred engineering branch...</option>
+                        <option value="" disabled>
+                            {branchesLoading ? 'Loading branches...' : 'Select preferred engineering branch...'}
+                        </option>
                         {branches.map(b => (
                             <option key={b.id} value={b.id}>{b.name} ({b.code})</option>
                         ))}
                     </select>
+                    {branchesError && (
+                        <div className="flex items-center justify-between gap-3">
+                            <p className="text-[11px] font-medium text-red-500">{branchesError}</p>
+                            <button
+                                type="button"
+                                onClick={fetchBranches}
+                                className="text-[11px] font-semibold text-primary-600 hover:underline"
+                            >
+                                Retry
+                            </button>
+                        </div>
+                    )}
                 </div>
 
                 {/* Aadhaar Number */}

@@ -5,6 +5,33 @@ import { supabase, supabaseConfigError } from '../lib/supabase';
 
 const AuthContext = createContext(null);
 
+const parseJwtPayload = (token) => {
+    if (!token) return null;
+    try {
+        const [, payload] = token.split('.');
+        if (!payload) return null;
+        const normalized = payload.replace(/-/g, '+').replace(/_/g, '/');
+        const decoded = atob(normalized);
+        return JSON.parse(decoded);
+    } catch {
+        return null;
+    }
+};
+
+const buildFallbackUserFromToken = (token) => {
+    const claims = parseJwtPayload(token);
+    if (!claims) return null;
+    return {
+        id: claims.user_id || claims.sub || null,
+        email: claims.email || null,
+        role:
+            claims.app_metadata?.role ||
+            claims.user_metadata?.role ||
+            'STUDENT',
+        supabaseUserId: claims.sub || null,
+    };
+};
+
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(null);
@@ -33,7 +60,8 @@ export const AuthProvider = ({ children }) => {
                 setUser(response.data.data);
             } catch (error) {
                 console.error('Failed to fetch authenticated profile', error);
-                setUser(null);
+                // Fall back to JWT claims so login routing still works
+                setUser(buildFallbackUserFromToken(accessToken));
             } finally {
                 setLoading(false);
             }
@@ -56,6 +84,7 @@ export const AuthProvider = ({ children }) => {
                 setUser(response.data.data);
             } catch (error) {
                 console.error('Failed to refresh authenticated profile', error);
+                setUser(buildFallbackUserFromToken(accessToken));
             }
         });
 

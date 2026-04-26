@@ -14,6 +14,8 @@ export const getBranches = async (req: Request, res: Response) => {
       }
     });
 
+    // Master data changes rarely; enable short caching for faster UX.
+    res.setHeader("Cache-Control", "public, max-age=300");
     return res.status(200).json({
       success: true,
       data: branches

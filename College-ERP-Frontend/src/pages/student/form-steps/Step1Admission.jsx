@@ -20,13 +20,24 @@ const Step1Admission = ({ onNext, data, updateData }) => {
         setBranchesError('');
         try {
             // Hosted backends can cold-start; give this endpoint a longer timeout.
-            const res = await api.get('/branches', { timeout: 25000 });
+            const res = await api.get('/branches', { timeout: 60000 });
             if (res.data.success) {
                 setBranches(Array.isArray(res.data.data) ? res.data.data : []);
             } else {
                 setBranchesError('Failed to load branch list.');
             }
         } catch (err) {
+            // Single automatic retry for transient cold-start/network delays.
+            try {
+                const retryRes = await api.get('/branches', { timeout: 60000 });
+                if (retryRes.data.success) {
+                    setBranches(Array.isArray(retryRes.data.data) ? retryRes.data.data : []);
+                    setBranchesError('');
+                    return;
+                }
+            } catch (_) {
+                // handled below
+            }
             setBranchesError('Failed to load branch list. Please retry.');
         } finally {
             setBranchesLoading(false);

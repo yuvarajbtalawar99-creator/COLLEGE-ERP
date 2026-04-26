@@ -1,9 +1,9 @@
 import { Router } from "express";
 import { getBranches } from "../controllers/branch.controller";
-import { verifyToken } from "../middlewares/auth.middleware";
 
 const router = Router();
 
-router.get("/", verifyToken, getBranches);
+// Branches are public master data needed on login-protected and pre-auth screens.
+router.get("/", getBranches);
 
 export default router;
